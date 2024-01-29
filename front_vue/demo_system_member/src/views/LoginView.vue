@@ -6,6 +6,7 @@ const router = useRouter()
 const route = useRoute()
 let username = ref('')
 let password = ref('')
+let hwid = ref('')
 let textHeader = 'เข้าสู่ระบบ'
 let btn_submit = 'เข้าสู่ระบบ'
 let btn_close = 'สมัครสมาชิก'
@@ -53,6 +54,19 @@ const loginMember = () => {
              placeholder="******" 
              class="input input-bordered w-full max-w-xs" 
              v-model="password"
+             />
+          </label>
+        </div>
+        <div class="flex justify-center" v-if="route.fullPath === '/register'">
+          <label class="form-control w-full max-w-xs">
+            <div class="label">
+              <span class="label-text">เลขประจำเครื่องสมาชิก</span>
+            </div>
+            <input
+             type="text" 
+             placeholder="6EDFEBF9C0909E3FBFF " 
+             class="input input-bordered w-full max-w-xs" 
+             v-model="hwid"
              />
           </label>
         </div>
