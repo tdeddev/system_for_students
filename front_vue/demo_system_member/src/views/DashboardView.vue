@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import AdminLayout from '../layouts/AdminLayout.vue'
+import MemberLayout from '../layouts/MemberLayout.vue'
 import { useUsersStore } from '../stores/users'
 import Swal from 'sweetalert2'
+import { useRoute } from 'vue-router';
 let days = ref(30)
 let hwid = ref('')
 let newHwid = ref('')
@@ -10,8 +12,11 @@ let game = ref('')
 let userStore = useUsersStore()
 let username = ref('')
 let expirydate = ref(0)
+let route = useRoute()
 onMounted(() => {
-    userStore.getMember()
+    if(route.query.role === 'admin'){
+        userStore.getMember();
+    }
 })
 
 const selectedUser = (ref) => {
@@ -40,7 +45,7 @@ const updateUserHwid = () => {
 </script>
 
 <template>
-    <AdminLayout>
+    <AdminLayout v-if="route.query.role === 'admin'">
         <div class="overflow-x-auto">
             <table class="table">
                 <!-- head -->
@@ -58,10 +63,10 @@ const updateUserHwid = () => {
                 <tbody>
                     <!-- row 1 -->
                     <tr v-for="(member, index) in userStore.list" :key="index">
-                        <th>{{ index+1 }}</th>
+                        <th>{{ index + 1 }}</th>
                         <td>{{ member.username }}</td>
                         <td>{{ member.game }}</td>
-                        <td>{{ member.hwid }} 
+                        <td>{{ member.hwid }}
                             <button class="btn btn-sm mx-3" onclick=my_modal_2.showModal() @click="selectedUser(index)">
                                 <span class="material-symbols-outlined">
                                     cached
@@ -69,10 +74,12 @@ const updateUserHwid = () => {
                             </button>
                         </td>
                         <td>{{ member.expirydate }}</td>
-                        <td class="badge mt-4" :class="member.status == 1 ? 'badge-success' : 'badge-error'">{{ member.status == 1 ? 'เปิดใช้งาน' : 'ปิดใช้งาน' }}</td>
+                        <td class="badge mt-4" :class="member.status == 1 ? 'badge-success' : 'badge-error'">{{
+                            member.status == 1 ? 'เปิดใช้งาน' : 'ปิดใช้งาน' }}</td>
                         <td>
                             <div class="flex gap-4">
-                                <button class="btn btn-info btn-sm" onclick=my_modal_1.showModal() @click="selectedUser(index)">ต่ออายุ</button>
+                                <button class="btn btn-info btn-sm" onclick=my_modal_1.showModal()
+                                    @click="selectedUser(index)">ต่ออายุ</button>
                             </div>
                         </td>
                     </tr>
@@ -86,43 +93,77 @@ const updateUserHwid = () => {
                     ใช้งานได้ถึง : {{ expirydate }} <br>
                     เกมส์ : {{ game }}
                 </div>
-                <input 
-                type="number" 
-                placeholder="username" 
-                class="input input-bordered input-sm w-16" 
-                v-model="days"
-                />
+                <input type="number" placeholder="username" class="input input-bordered input-sm w-16" v-model="days" />
                 <span class="mx-3 text-1xl">Days</span>
                 <div class="modal-action">
-                <form method="dialog">
-                    <!-- if there is a button in form, it will close the modal -->
-                    <div class="flex gap-4">
-                        <button class="btn btn-success text-white" @click="updateUser">บันทึก</button>
-                        <button class="btn">ปิด</button>
-                    </div>
-                </form>
+                    <form method="dialog">
+                        <!-- if there is a button in form, it will close the modal -->
+                        <div class="flex gap-4">
+                            <button class="btn btn-success text-white" @click="updateUser">บันทึก</button>
+                            <button class="btn">ปิด</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </dialog>
         <dialog id="my_modal_2" class="modal">
             <div class="modal-box">
                 <h3 class="font-bold text-lg mb-3">สมาชิก {{ username }} | HWID : {{ hwid }}</h3>
-                <input 
-                type="text" 
-                placeholder="HWID (เลขประจำเครื่อง)" 
-                class="input input-bordered input-sm w-1/2" 
-                v-model="newHwid"
-                />
+                <input type="text" placeholder="HWID (เลขประจำเครื่อง)" class="input input-bordered input-sm w-1/2"
+                    v-model="newHwid" />
                 <div class="modal-action">
-                <form method="dialog">
-                    <!-- if there is a button in form, it will close the modal -->
-                    <div class="flex gap-4">
-                        <button class="btn btn-success text-white" @click="updateUserHwid">บันทึก</button>
-                        <button class="btn">ปิด</button>
-                    </div>
-                </form>
+                    <form method="dialog">
+                        <!-- if there is a button in form, it will close the modal -->
+                        <div class="flex gap-4">
+                            <button class="btn btn-success text-white" @click="updateUserHwid">บันทึก</button>
+                            <button class="btn">ปิด</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </dialog>
     </AdminLayout>
+    <MemberLayout v-else>
+        <div class="container w-1/2 mx-auto mt-4">
+            <table class="table">
+                <!-- head -->
+                <thead>
+                    <tr>
+                        <th>User INFO</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- row 1 -->
+                    <tr>
+                        <th>ยูสเซอร์</th>
+                        <td>{{ userStore.profile.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>พาสเวิร์ด</th>
+                        <td>************ </td>
+                        <td>
+                            <button class="btn btn-neutral btn-sm mt-1 ms-3">แก้ไข</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>เกมส์</th>
+                        <td>CIS</td>
+                    </tr>
+                    <tr>
+                        <th>HWID</th>
+                        <td>{{ userStore.profile.hwid }} </td>
+                        <td>
+                            <button class="btn btn-neutral btn-sm mt-1 ms-3">แก้ไข</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>วันหมดอายุ</th>
+                        <td>{{ userStore.profile.expirydate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </MemberLayout>
 </template>
