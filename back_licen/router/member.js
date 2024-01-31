@@ -6,8 +6,16 @@ const dayjs = require('dayjs');
 let dateNow = utils.now()
 const moment = require('moment')
 const momentTz = require('moment-timezone')
+
+
 router.get('/get_member', async(req, res) => {
     const results = await db.query('select * from member')
+    res.json(utils.res_to_front(results[0]))
+})
+
+router.get('/get_member/:id', async(req, res) => {
+    let id = req.params.id
+    const results = await db.query('select * from member where id = ?', id)
     res.json(utils.res_to_front(results[0]))
 })
 
@@ -59,7 +67,7 @@ router.put('/update_member/:id', async (req, res) => {
                 obj.expirydate = momentTz(expirydate[0][0].expirydate).tz("Asia/Bangkok").add(r.days, 'days').format("YYYY-MM-DD HH:mm:ss")
             }
         }
-        let results = await db.query('UPDATE member SET ? WHERE id = ?', [obj, id])
+        await db.query('UPDATE member SET ? WHERE id = ?', [obj, id])
         res.json(utils.res_to_front(obj,'0',"อัพเดทสำเร็จ!"))
     } catch (error) {
         res.json(utils.res_to_front([],100,'อัพเดทข้อมูลไม่สำเร็จ'))

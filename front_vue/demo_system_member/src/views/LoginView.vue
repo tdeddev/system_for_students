@@ -52,20 +52,35 @@ const register = async () => {
     hwid : hwid.value,
     game : game.value
   }
-  await userStore.createMember(objMember)
-  if(userStore.response){
+  if(objMember.username && objMember.password && objMember.game){
+    await userStore.createMember(objMember)
+      if(userStore.response == 'สมัครสมาชิกสำเร็จ'){
+        Swal.fire({
+            title: 'สำเร็จ!',
+            text: userStore.response,
+            icon: 'success',
+            confirmButtonText: 'ปิด'
+        })
+        router.push({name : 'login'})
+        btn_close = 'สมัครสมาชิก'
+        btn_submit = 'เข้าสู่ระบบ'
+      }else{
+        Swal.fire({
+            title: 'ไม่สำเร็จ!',
+            text: userStore.response,
+            icon: 'error',
+            confirmButtonText: 'ปิด'
+      })
+    }
+  }else{
     Swal.fire({
-        title: 'สำเร็จ!',
-        text: userStore.response,
-        icon: 'success',
+        title: 'ไม่สำเร็จ!',
+        text: 'กรอกข้อมูลไม่ครบ',
+        icon: 'warning',
         confirmButtonText: 'ปิด'
     })
-    router.push({name : 'login'})
-    username.value = ''
-    password.value = ''
-    btn_close = 'สมัครสมาชิก'
-    btn_submit = 'เข้าสู่ระบบ'
   }
+  
 }
 </script>
 
